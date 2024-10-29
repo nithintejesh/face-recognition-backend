@@ -438,10 +438,7 @@ app.use(express.json());
 // MongoDB connection
 async function connectDB() {
     try {
-        await mongoose.connect(process.env.DB_CONNECT, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-        });
+        await mongoose.connect(process.env.DB_CONNECT);
         console.log('Connected to MongoDB');
     } catch (err) {
         console.error('MongoDB connection failed', err);

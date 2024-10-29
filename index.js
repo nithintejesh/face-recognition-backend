@@ -460,6 +460,7 @@ app.use('/api/rank', rankRoute);
 // Clarifai API configuration
 const USER_ID = 'clarifai';
 const PAT = process.env.CLARIFAI_PAT || '5ddf166e361d4abd9c7e275537b2db43'; // Using env variable or fallback
+console.log(`pat: ${PAT}`);
 const APP_ID = 'main';
 const WORKFLOW_ID = 'Demographics';
 

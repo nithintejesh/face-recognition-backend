@@ -469,49 +469,6 @@ metadata.set("authorization", `Key ${PAT}`);
 
 
 // Demographics endpoint to handle Clarifai API calls
-app.post('/clarifai', (req, res) => {
-    const { imageUrl } = req.body;
-
-    if (!imageUrl) {
-        return res.status(400).json({ error: "Image URL is required." });
-    }
-
-    stub.PostWorkflowResults(
-        {
-            user_app_id: { user_id: USER_ID, app_id: APP_ID },
-            workflow_id: WORKFLOW_ID,
-            inputs: [{ data: { image: { url: imageUrl } } }]
-        },
-        metadata,
-        (err, response) => {
-            if (err || response.status.code !== 10000) {
-                console.error("Clarifai API call error:", err || response.status.description);
-                return res.status(500).json({ error: "Clarifai API call failed." });
-            }
-
-            // Check if the response has the expected structure
-            const regions = response.results[0]?.outputs?.[0]?.data?.regions;
-            if (!regions) {
-                return res.status(404).json({ message: "No regions found." });
-            }
-
-            // Safely stringify and parse data before sending to frontend
-            const data = JSON.parse(stringify(regions));
-            res.json({ predictions: data });
-        }
-    );
-});
-
-
-// Start server
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-
-
-
-
-
-// Demographics endpoint to handle Clarifai API calls
 // app.post('/clarifai', (req, res) => {
 //     const { imageUrl } = req.body;
 
@@ -532,9 +489,54 @@ app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 //                 return res.status(500).json({ error: "Clarifai API call failed." });
 //             }
 
-//             // Processing and sending response back to the frontend
-//             const data = stringify(response.results[0].outputs[4]?.data?.regions, null, 2); // Safely stringify
-//             res.json(data ? { predictions: JSON.parse(data) } : { message: "No regions found." });
+//             // Check if the response has the expected structure
+//             const regions = response.results[0]?.outputs?.[0]?.data?.regions;
+//             if (!regions) {
+//                 return res.status(404).json({ message: "No regions found." });
+//             }
+
+//             // Safely stringify and parse data before sending to frontend
+//             const data = JSON.parse(stringify(regions));
+//             res.json({ predictions: data });
 //         }
 //     );
 // });
+
+
+
+
+
+
+
+// Demographics endpoint to handle Clarifai API calls
+app.post('/clarifai', (req, res) => {
+    const { imageUrl } = req.body;
+
+    if (!imageUrl) {
+        return res.status(400).json({ error: "Image URL is required." });
+    }
+
+    stub.PostWorkflowResults(
+        {
+            user_app_id: { user_id: USER_ID, app_id: APP_ID },
+            workflow_id: WORKFLOW_ID,
+            inputs: [{ data: { image: { url: imageUrl } } }]
+        },
+        metadata,
+        (err, response) => {
+            if (err || response.status.code !== 10000) {
+                console.error("Clarifai API call error:", err || response.status.description);
+                return res.status(500).json({ error: "Clarifai API call failed." });
+            }
+
+            // Processing and sending response back to the frontend
+            const data = stringify(response.results[0].outputs[4]?.data?.regions, null, 2); // Safely stringify
+            res.json(data ? { predictions: JSON.parse(data) } : { message: "No regions found." });
+        }
+    );
+});
+
+
+// Start server
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
